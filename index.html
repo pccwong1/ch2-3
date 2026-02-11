@@ -19,34 +19,21 @@
         }
     </script>
     <style>
-        body {
-            font-family: 'Microsoft JhengHei', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-        .slide-in {
-            animation: slideIn 0.5s ease-out;
-        }
+        body { font-family: 'Microsoft JhengHei', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .slide-in { animation: slideIn 0.5s ease-out; }
         @keyframes slideIn {
             from { transform: translateY(20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
-        .correct-answer {
-            background-color: #10b981 !important; /* green-500 */
-            color: white !important;
-            border-color: #10b981 !important;
-        }
-        .wrong-answer {
-            background-color: #ef4444 !important; /* red-500 */
-            color: white !important;
-            border-color: #ef4444 !important;
-        }
-        .difficulty-btn.active {
-            background-color: #6d28d9;
-            color: white;
-            border-color: #6d28d9;
-        }
-        /* Button hover scale effect */
-        button:active {
-            transform: scale(0.98);
+        .correct-answer { background-color: #10b981 !important; color: white !important; border-color: #10b981 !important; }
+        .wrong-answer { background-color: #ef4444 !important; color: white !important; border-color: #ef4444 !important; }
+        .difficulty-btn.active { background-color: #6d28d9; color: white; border-color: #6d28d9; }
+        button:active { transform: scale(0.98); }
+        @media print {
+            body > div > *:not(#resultsScreen) { display: none; }
+            #resultsScreen { display: block !important; }
+            #printable-results { box-shadow: none !important; border: none !important; }
+            #action-buttons { display: none; }
         }
     </style>
 </head>
@@ -61,57 +48,33 @@
                 <div id="progressBar" class="bg-primary h-full transition-all duration-300" style="width: 0%"></div>
             </div>
             <div class="flex justify-between mt-2 text-sm text-gray-600 dark:text-gray-400">
-                <span>分錄 <span id="currentQuestion">0</span>/<span id="totalQuestions">0</span></span>
+                <span>進度 <span id="currentQuestion">0</span>/<span id="totalQuestions">0</span></span>
                 <span>分數: <span id="score" class="font-bold text-primary">0</span></span>
             </div>
         </div>
-        <div id="nameScreen" class="max-w-2xl mx-auto text-center slide-in">
-            <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-200 dark:border-gray-700">
-                <div class="text-6xl mb-6">👤</div>
-                <h2 class="text-2xl font-bold mb-4">歡迎來到會計等式遊戲</h2>
-                <p class="text-gray-600 dark:text-gray-400 mb-6 text-base">請輸入你的中文全名以開始遊戲</p>
-                
-                <div class="mb-6">
-                    <input
-                        type="text"
-                        id="studentName"
-                        placeholder="例如：陳大文"
-                        class="w-full max-w-md mx-auto px-4 py-3 text-base rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-primary focus:outline-none transition-colors"
-                        onkeypress="if(event.key === 'Enter') submitName()"
-                    >
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">必須輸入中文姓名</p>
-                </div>
-                <button onclick="submitName()" class="bg-primary hover:bg-purple-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all transform hover:scale-105 shadow-md">
-                    下一步
-                </button>
-            </div>
-        </div>
-        <div id="startScreen" class="max-w-2xl mx-auto text-center hidden slide-in">
+
+        <div id="startScreen" class="max-w-2xl mx-auto text-center slide-in">
             <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-200 dark:border-gray-700">
                 <div class="text-6xl mb-6">📊</div>
-                <h2 class="text-2xl font-bold mb-4">準備好學習會計了嗎？<span id="displayName" class="text-primary"></span></h2>
-                
+                <h2 class="text-2xl font-bold mb-4">準備好學習會計了嗎？</h2>
                 <div class="mb-6">
                     <h3 class="text-lg font-semibold mb-3">遊戲說明：</h3>
                     <ul class="text-left text-gray-600 dark:text-gray-400 space-y-2 max-w-md mx-auto list-none">
-                        <li>✓ 閱讀每個交易事項</li>
-                        <li>✓ 選擇受影響的帳戶名稱</li>
-                        <li>✓ 選擇帳戶類型（資產/負債/資本/收益/費用/提用）</li>
-                        <li>✓ 判斷影響方向（增加↑/減少↓）</li>
-                        <li>✓ 選擇借貸方向（借方/貸方）</li>
+                        <li>✓ 選擇難度，挑戰最高100分！</li>
+                        <li>✓ 閱讀交易事項，完成所有分錄。</li>
                     </ul>
                 </div>
                 <div class="mb-8">
-                    <label class="block text-base font-semibold mb-3">選擇難度：</label>
+                    <label class="block text-base font-semibold mb-3">選擇難度 (滿分均為100分):</label>
                     <div class="flex gap-3 justify-center flex-wrap">
-                        <button onclick="selectDifficulty('easy')" class="difficulty-btn px-6 py-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 hover:border-primary hover:bg-primary hover:text-white transition-all text-base">
-                            簡單 (10題)
+                        <button onclick="selectDifficulty('easy')" class="difficulty-btn px-6 py-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 transition-all text-base">
+                            簡單 (10 題)
                         </button>
-                        <button onclick="selectDifficulty('medium')" class="difficulty-btn px-6 py-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 hover:border-primary hover:bg-primary hover:text-white transition-all text-base">
-                            中等 (15題)
+                        <button onclick="selectDifficulty('medium')" class="difficulty-btn px-6 py-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 transition-all text-base">
+                            中等 (5 題)
                         </button>
                         <button onclick="selectDifficulty('hard')" class="difficulty-btn px-6 py-3 rounded-lg border-2 border-primary bg-primary text-white transition-all text-base active">
-                            困難 (全部23題)
+                            困難 (2 題)
                         </button>
                     </div>
                 </div>
@@ -120,16 +83,15 @@
                 </button>
             </div>
         </div>
+
         <div id="gameScreen" class="max-w-4xl mx-auto hidden slide-in">
             <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 md:p-8 shadow-lg border border-gray-200 dark:border-gray-700">
-                
                 <div class="mb-6 p-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-600">
                     <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">交易事項:</div>
                     <div id="transactionText" class="text-xl md:text-2xl font-bold text-primary"></div>
                 </div>
                 <div id="entryIndicator" class="mb-4 text-base font-semibold text-gray-600 dark:text-gray-300"></div>
-                <div id="questionContainer" class="space-y-6">
-                </div>
+                <div id="questionContainer" class="space-y-6"></div>
                 <div id="feedback" class="mt-6 p-4 rounded-lg hidden text-center font-bold text-lg"></div>
                 <div class="mt-8 text-center">
                     <button id="submitBtn" onclick="checkAnswer()" class="bg-primary hover:bg-purple-700 text-white font-bold py-3 px-12 rounded-lg text-lg transition-all transform hover:scale-105 shadow-md w-full md:w-auto">
@@ -138,23 +100,145 @@
                 </div>
             </div>
         </div>
-        <div id="endScreen" class="max-w-2xl mx-auto text-center hidden slide-in">
-            <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-200 dark:border-gray-700">
-                <div id="endEmoji" class="text-6xl mb-6">🏆</div>
-                <h2 class="text-3xl font-bold mb-4">遊戲完成！</h2>
+
+        <div id="resultsScreen" class="max-w-2xl mx-auto text-center hidden">
+            <div id="printable-results" class="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-200 dark:border-gray-700">
+                <h2 class="text-3xl font-bold mb-4 text-gray-800 dark:text-gray-200">成績報告</h2>
+                <p class="text-lg text-gray-600 dark:text-gray-400 mb-6">會計等式互動遊戲</p>
+                <div id="endEmoji" class="text-6xl mb-4"></div>
                 
-                <div class="text-5xl font-bold text-primary mb-6">
-                    <span id="finalScore">0</span>/<span id="finalTotal">0</span>
+                <div class="text-5xl font-bold text-primary mb-2">
+                    <span id="finalScore">0</span> / <span id="finalTotal">100</span>
+                </div>
+                <div class="text-2xl text-gray-700 dark:text-gray-300 mb-6">
+                    答對率: <span id="accuracy">0</span>%
                 </div>
                 
-                <div id="performanceMessage" class="text-xl mb-8 text-gray-700 dark:text-gray-300 font-medium"></div>
-                <button onclick="restartGame()" class="bg-primary hover:bg-purple-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all transform hover:scale-105 shadow-md">
-                    再玩一次
-                </button>
+                <div id="performanceMessage" class="text-xl mb-8 text-gray-600 dark:text-gray-400 font-medium"></div>
+
+                <div id="action-buttons" class="space-y-4 md:space-y-0 md:space-x-4">
+                    <button onclick="printResults()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition-all transform hover:scale-105 shadow-md">
+                        🖨️ 列印報告
+                    </button>
+                    <button onclick="restartGame()" class="bg-primary hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition-all transform hover:scale-105 shadow-md">
+                        🔄 再玩一次
+                    </button>
+                </div>
             </div>
         </div>
     </div>
+
     <script>
+        const FULL_MARKS = 100;
+        const transactions = [
+            { id: 'a', text: '3月8日東主投入現金$10,000', entries: [{ account: '現金', type: '資產', effect: 'increase', debitCredit: 'debit' }, { account: '資本', type: '資本', effect: 'increase', debitCredit: 'credit' }] },
+            { id: 'b', text: '3月9日東主投入辦公室設備$20,000', entries: [{ account: '辦公室設備', type: '資產', effect: 'increase', debitCredit: 'debit' }, { account: '資本', type: '資本', effect: 'increase', debitCredit: 'credit' }] },
+            { id: 'c', text: '3月10日賒購貨品$5,000', entries: [{ account: '購貨', type: '費用', effect: 'increase', debitCredit: 'debit' }, { account: '應付貨款', type: '負債', effect: 'increase', debitCredit: 'credit' }] },
+            { id: 'd', text: '3月12日賒銷貨品$8,000', entries: [{ account: '應收貨款', type: '資產', effect: 'increase', debitCredit: 'debit' }, { account: '銷貨', type: '收益', effect: 'increase', debitCredit: 'credit' }] },
+            { id: 'e', text: '3月15日以現金支付租金$1,000', entries: [{ account: '租金', type: '費用', effect: 'increase', debitCredit: 'debit' }, { account: '現金', type: '資產', effect: 'decrease', debitCredit: 'credit' }] },
+            { id: 'f', text: '3月18日收到佣金收入$500', entries: [{ account: '現金', type: '資產', effect: 'increase', debitCredit: 'debit' }, { account: '佣金收入', type: '收益', effect: 'increase', debitCredit: 'credit' }] },
+            { id: 'g', text: '3月20日歸還應付貨款$2,000', entries: [{ account: '應付貨款', type: '負債', effect: 'decrease', debitCredit: 'debit' }, { account: '銀行存款', type: '資產', effect: 'decrease', debitCredit: 'credit' }] },
+            { id: 'h', text: '3月22日收到應收貨款$3,000', entries: [{ account: '現金', type: '資產', effect: 'increase', debitCredit: 'debit' }, { account: '應收貨款', type: '資產', effect: 'decrease', debitCredit: 'credit' }] },
+            { id: 't', text: '4月19日東主提取貨品$100', entries: [{ account: '提用', type: '提用', effect: 'increase', debitCredit: 'debit' }, { account: '購貨', type: '費用', effect: 'decrease', debitCredit: 'credit' }] },
+            { id: 'u', text: '4月20日東主提取辦公室設備$1,000', entries: [{ account: '提用', type: '提用', effect: 'increase', debitCredit: 'debit' }, { account: '辦公室設備', type: '資產', effect: 'decrease', debitCredit: 'credit' }] },
+            { id: 'v', text: '4月25日從銀行提取現金$400', entries: [{ account: '現金', type: '資產', effect: 'increase', debitCredit: 'debit' }, { account: '銀行存款', type: '資產', effect: 'decrease', debitCredit: 'credit' }] },
+            { id: 'w', text: '4月26日向銀行借款$50,000', entries: [{ account: '現金', type: '資產', effect: 'increase', debitCredit: 'debit' }, { account: '銀行貸款', type: '負債', effect: 'increase', debitCredit: 'credit' }] }
+        ];
+        const accountOptions = [ '現金', '辦公室設備', '應付貨款', '應收貨款', '資本', '購貨', '銷貨', '銀行存款', '租金', '銀行貸款', '提用', '佣金收入' ];
+        const typeOptions = ['資產', '負債', '資本', '收益', '費用', '提用'];
+        const effectOptions = [{value: 'increase', label: '增加 ↑'}, {value: 'decrease', label: '減少 ↓'}];
+        const debitCreditOptions = [{value: 'debit', label: '借方'}, {value: 'credit', label: '貸方'}];
+        
+        let selectedDifficulty = 'hard';
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let totalEntriesInGame = 0;
+        let pointsPerEntry = 0;
+        let userAnswers = { account: null, type: null, effect: null, debitCredit: null };
+
+        function selectDifficulty(difficulty) {
+            selectedDifficulty = difficulty;
+            document.querySelectorAll('.difficulty-btn').forEach(btn => btn.classList.remove('active', 'bg-primary', 'text-white'));
+            event.currentTarget.classList.add('active', 'bg-primary', 'text-white');
+        }
+
+        function startGame() {
+            let shuffled = shuffleArray([...transactions]);
+            if (selectedDifficulty === 'easy') {
+                currentQuestions = shuffled.slice(0, 10);
+                pointsPerEntry = FULL_MARKS / (10 * 2); // 10 questions, 2 entries each
+            } else if (selectedDifficulty === 'medium') {
+                currentQuestions = shuffled.slice(0, 5);
+                pointsPerEntry = FULL_MARKS / (5 * 2);
+            } else { // hard
+                currentQuestions = shuffled.slice(0, 2);
+                pointsPerEntry = FULL_MARKS / (2 * 2);
+            }
+            
+            currentQuestions.forEach(q => q.doneEntries = []);
+            currentQuestionIndex = 0;
+            score = 0;
+            totalEntriesInGame = currentQuestions.reduce((sum, q) => sum + q.entries.length, 0);
+            
+            document.getElementById('totalQuestions').textContent = totalEntriesInGame;
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('progressContainer').classList.remove('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            
+            loadQuestion();
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= currentQuestions.length) {
+                endGame();
+                return;
+            }
+            const transaction = currentQuestions[currentQuestionIndex];
+            const doneEntriesCount = transaction.doneEntries.length;
+            const totalEntriesInTransaction = transaction.entries.length;
+            
+            document.getElementById('transactionText').textContent = transaction.text;
+            document.getElementById('entryIndicator').textContent = totalEntriesInTransaction > 1 ? `分錄 ${doneEntriesCount + 1}/${totalEntriesInTransaction} (次序不限)` : '';
+            userAnswers = { account: null, type: null, effect: null, debitCredit: null };
+            document.getElementById('feedback').classList.add('hidden');
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('submitBtn').classList.remove('opacity-50', 'cursor-not-allowed');
+
+            let entriesDone = 0;
+            for(let i = 0; i < currentQuestionIndex; i++) entriesDone += currentQuestions[i].entries.length;
+            entriesDone += doneEntriesCount;
+            
+            document.getElementById('currentQuestion').textContent = entriesDone + 1 > totalEntriesInGame ? totalEntriesInGame : entriesDone + 1;
+            document.getElementById('score').textContent = score;
+            document.getElementById('progressBar').style.width = totalEntriesInGame > 0 ? ((entriesDone) / totalEntriesInGame) * 100 + '%' : '0%';
+
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const container = document.getElementById('questionContainer');
+            container.innerHTML = '';
+            container.innerHTML += createSelectionSection('會計科目', 'account', accountOptions);
+            container.innerHTML += createSelectionSection('帳戶類型', 'type', typeOptions);
+            container.innerHTML += createSelectionSection('影響方向', 'effect', effectOptions, true);
+            container.innerHTML += createSelectionSection('借方 / 貸方', 'debitCredit', debitCreditOptions, true);
+        }
+
+        function createSelectionSection(title, type, options, isObject = false) {
+            let buttonsHtml = options.map(opt => {
+                const value = isObject ? opt.value : opt;
+                const label = isObject ? opt.label : opt;
+             
+
         // Game Data based on the provided file
         const transactions = [
             {
@@ -544,3 +628,4 @@
     </script>
 </body>
 </html>
+
