@@ -29,12 +29,6 @@
         .wrong-answer { background-color: #ef4444 !important; color: white !important; border-color: #ef4444 !important; }
         .difficulty-btn.active { background-color: #6d28d9; color: white; border-color: #6d28d9; }
         button:active { transform: scale(0.98); }
-        @media print {
-            body > div > *:not(#resultsScreen) { display: none; }
-            #resultsScreen { display: block !important; }
-            #printable-results { box-shadow: none !important; border: none !important; }
-            #action-buttons { display: none; }
-        }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
@@ -67,14 +61,14 @@
                 <div class="mb-8">
                     <label class="block text-base font-semibold mb-3">選擇難度 (滿分均為100分):</label>
                     <div id="difficulty-selection" class="flex gap-3 justify-center flex-wrap">
-                        <button data-difficulty="easy" class="difficulty-btn px-6 py-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 transition-all text-base">
+                        <button data-difficulty="easy" class="difficulty-btn px-6 py-3 rounded-lg border-2 border-primary bg-primary text-white transition-all text-base active">
                             簡單 (10 題)
                         </button>
                         <button data-difficulty="medium" class="difficulty-btn px-6 py-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 transition-all text-base">
-                            中等 (5 題)
+                            中等 (8 題)
                         </button>
-                        <button data-difficulty="hard" class="difficulty-btn px-6 py-3 rounded-lg border-2 border-primary bg-primary text-white transition-all text-base active">
-                            困難 (2 題)
+                        <button data-difficulty="hard" class="difficulty-btn px-6 py-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 transition-all text-base">
+                            困難 (6 題)
                         </button>
                     </div>
                 </div>
@@ -114,9 +108,6 @@
                 </div>
                 <div id="performanceMessage" class="text-xl mb-8 text-gray-600 dark:text-gray-400 font-medium"></div>
                 <div id="action-buttons" class="space-y-4 md:space-y-0 md:space-x-4">
-                    <button id="printBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition-all transform hover:scale-105 shadow-md">
-                        🖨️ 列印報告
-                    </button>
                     <button id="restartBtn" class="bg-primary hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition-all transform hover:scale-105 shadow-md">
                         🔄 再玩一次
                     </button>
@@ -133,20 +124,20 @@
             { id: 'c', text: '3月10日賒購貨品$5,000', entries: [{ account: '購貨', type: '費用', effect: 'increase', debitCredit: 'debit' }, { account: '應付貨款', type: '負債', effect: 'increase', debitCredit: 'credit' }] },
             { id: 'd', text: '3月12日賒銷貨品$8,000', entries: [{ account: '應收貨款', type: '資產', effect: 'increase', debitCredit: 'debit' }, { account: '銷貨', type: '收益', effect: 'increase', debitCredit: 'credit' }] },
             { id: 'e', text: '3月15日以現金支付租金$1,000', entries: [{ account: '租金', type: '費用', effect: 'increase', debitCredit: 'debit' }, { account: '現金', type: '資產', effect: 'decrease', debitCredit: 'credit' }] },
-            { id: 'f', text: '3月18日收到佣金收入$500', entries: [{ account: '現金', type: '資產', effect: 'increase', debitCredit: 'debit' }, { account: '佣金收入', type: '收益', effect: 'increase', debitCredit: 'credit' }] },
-            { id: 'g', text: '3月20日歸還應付貨款$2,000', entries: [{ account: '應付貨款', type: '負債', effect: 'decrease', debitCredit: 'debit' }, { account: '銀行存款', type: '資產', effect: 'decrease', debitCredit: 'credit' }] },
-            { id: 'h', text: '3月22日收到應收貨款$3,000', entries: [{ account: '現金', type: '資產', effect: 'increase', debitCredit: 'debit' }, { account: '應收貨款', type: '資產', effect: 'decrease', debitCredit: 'credit' }] },
-            { id: 't', text: '4月19日東主提取貨品$100', entries: [{ account: '提用', type: '提用', effect: 'increase', debitCredit: 'debit' }, { account: '購貨', type: '費用', effect: 'decrease', debitCredit: 'credit' }] },
-            { id: 'u', text: '4月20日東主提取辦公室設備$1,000', entries: [{ account: '提用', type: '提用', effect: 'increase', debitCredit: 'debit' }, { account: '辦公室設備', type: '資產', effect: 'decrease', debitCredit: 'credit' }] },
-            { id: 'v', text: '4月25日從銀行提取現金$400', entries: [{ account: '現金', type: '資產', effect: 'increase', debitCredit: 'debit' }, { account: '銀行存款', type: '資產', effect: 'decrease', debitCredit: 'credit' }] },
-            { id: 'w', text: '4月26日向銀行借款$50,000', entries: [{ account: '現金', type: '資產', effect: 'increase', debitCredit: 'debit' }, { account: '銀行貸款', type: '負債', effect: 'increase', debitCredit: 'credit' }] }
+            { id: 'f', text: '3月18日以現金收到佣金收入$500', entries: [{ account: '現金', type: '資產', effect: 'increase', debitCredit: 'debit' }, { account: '佣金收入', type: '收益', effect: 'increase', debitCredit: 'credit' }] },
+            { id: 'g', text: '3月20日以支票歸還應付貨款$2,000', entries: [{ account: '應付貨款', type: '負債', effect: 'decrease', debitCredit: 'debit' }, { account: '銀行存款', type: '資產', effect: 'decrease', debitCredit: 'credit' }] },
+            { id: 'h', text: '3月22日以現金收回應收貨款$3,000', entries: [{ account: '現金', type: '資產', effect: 'increase', debitCredit: 'debit' }, { account: '應收貨款', type: '資產', effect: 'decrease', debitCredit: 'credit' }] },
+            { id: 't', text: '4月19日東主提取貨品作私人用途$100', entries: [{ account: '提用', type: '提用', effect: 'increase', debitCredit: 'debit' }, { account: '購貨', type: '費用', effect: 'decrease', debitCredit: 'credit' }] },
+            { id: 'u', text: '4月20日東主提取辦公室設備作私人用途$1,000', entries: [{ account: '提用', type: '提用', effect: 'increase', debitCredit: 'debit' }, { account: '辦公室設備', type: '資產', effect: 'decrease', debitCredit: 'credit' }] },
+            { id: 'v', text: '4月25日從銀行提取現金作公司用途$400', entries: [{ account: '現金', type: '資產', effect: 'increase', debitCredit: 'debit' }, { account: '銀行存款', type: '資產', effect: 'decrease', debitCredit: 'credit' }] },
+            { id: 'w', text: '4月26日向銀行借款$50,000，款項存入現金', entries: [{ account: '現金', type: '資產', effect: 'increase', debitCredit: 'debit' }, { account: '銀行貸款', type: '負債', effect: 'increase', debitCredit: 'credit' }] }
         ];
         const accountOptions = [ '現金', '辦公室設備', '應付貨款', '應收貨款', '資本', '購貨', '銷貨', '銀行存款', '租金', '銀行貸款', '提用', '佣金收入' ];
         const typeOptions = ['資產', '負債', '資本', '收益', '費用', '提用'];
         const effectOptions = [{value: 'increase', label: '增加 ↑'}, {value: 'decrease', label: '減少 ↓'}];
         const debitCreditOptions = [{value: 'debit', label: '借方'}, {value: 'credit', label: '貸方'}];
         
-        let selectedDifficulty = 'hard';
+        let selectedDifficulty = 'easy'; // Default difficulty
         let currentQuestions = [];
         let currentQuestionIndex = 0;
         let score = 0;
@@ -162,15 +153,16 @@
 
         function startGame() {
             let shuffled = shuffleArray([...transactions]);
+            // *** EDITED: Re-balanced number of questions ***
             if (selectedDifficulty === 'easy') {
-                currentQuestions = shuffled.slice(0, 10);
-                pointsPerEntry = FULL_MARKS / (10 * 2); // 5 marks
+                currentQuestions = shuffled.slice(0, 10); 
+                pointsPerEntry = FULL_MARKS / (10 * 2); // 5 points
             } else if (selectedDifficulty === 'medium') {
-                currentQuestions = shuffled.slice(0, 5);
-                pointsPerEntry = FULL_MARKS / (5 * 2); // 10 marks
+                currentQuestions = shuffled.slice(0, 8); 
+                pointsPerEntry = FULL_MARKS / (8 * 2); // 6.25 points
             } else { // hard
-                currentQuestions = shuffled.slice(0, 2);
-                pointsPerEntry = FULL_MARKS / (2 * 2); // 25 marks
+                currentQuestions = shuffled.slice(0, 6);
+                pointsPerEntry = FULL_MARKS / (6 * 2); // 8.33... points
             }
             
             currentQuestions.forEach(q => q.doneEntries = []);
@@ -241,7 +233,6 @@
         function selectOption(type, value, btnElement) {
             if (document.getElementById('submitBtn').disabled) return;
             userAnswers[type] = value;
-            // Visually de-select all buttons in the same group before selecting the new one
             btnElement.closest('.grid').querySelectorAll('.option-btn').forEach(b => {
                  if(b.dataset.type === type) {
                     b.classList.remove('bg-primary', 'text-white', 'border-primary');
@@ -250,109 +241,6 @@
             btnElement.classList.add('bg-primary', 'text-white', 'border-primary');
         }
 
-        function checkAnswer() {
-            if (!userAnswers.account || !userAnswers.type || !userAnswers.effect || !userAnswers.debitCredit) {
-                showCustomAlert('請完成所有選項！');
-                return;
-            }
-            const transaction = currentQuestions[currentQuestionIndex];
-            let isCorrect = false, matchedEntry = null, matchedEntryIndex = -1;
+  
 
-            for (let i = 0; i < transaction.entries.length; i++) {
-                if (transaction.doneEntries.includes(i)) continue;
-                const entry = transaction.entries[i];
-                if (userAnswers.account === entry.account && userAnswers.type === entry.type && userAnswers.effect === entry.effect && userAnswers.debitCredit === entry.debitCredit) {
-                    isCorrect = true; matchedEntry = entry; matchedEntryIndex = i; break;
-                }
-            }
-            const feedbackEl = document.getElementById('feedback');
-            feedbackEl.className = 'mt-6 p-4 rounded-lg text-center font-bold text-lg';
 
-            if (isCorrect) {
-                score += pointsPerEntry;
-                transaction.doneEntries.push(matchedEntryIndex);
-                feedbackEl.textContent = `🎉 答對了！ +${pointsPerEntry}分`;
-                feedbackEl.classList.add('bg-green-100', 'dark:bg-green-900', 'text-green-800', 'dark:text-green-100');
-                highlightAnswers(matchedEntry);
-            } else {
-                const firstUnansweredIndex = transaction.entries.findIndex((entry, index) => !transaction.doneEntries.includes(index));
-                const expectedEntry = transaction.entries[firstUnansweredIndex];
-                feedbackEl.innerHTML = `❌ 答錯了。<br>正確答案之一是： ${expectedEntry.account} (${expectedEntry.debitCredit})`;
-                feedbackEl.classList.add('bg-red-100', 'dark:bg-red-900', 'text-red-800', 'dark:text-red-100');
-                highlightAnswers(expectedEntry);
-            }
-            document.getElementById('submitBtn').disabled = true;
-            document.getElementById('submitBtn').classList.add('opacity-50', 'cursor-not-allowed');
-            setTimeout(() => {
-                if (transaction.doneEntries.length >= transaction.entries.length) currentQuestionIndex++;
-                loadQuestion();
-            }, isCorrect ? 2000 : 4000);
-        }
-
-        function highlightAnswers(correctEntry) {
-            ['account', 'type', 'effect', 'debitCredit'].forEach(key => {
-                const correctVal = correctEntry[key], userVal = userAnswers[key];
-                const correctBtn = document.querySelector(`[data-type="${key}"][data-value="${correctVal}"]`);
-                if (correctBtn) correctBtn.classList.add('correct-answer');
-                if (userVal && userVal !== correctVal) {
-                    const wrongBtn = document.querySelector(`[data-type="${key}"][data-value="${userVal}"]`);
-                    if (wrongBtn) wrongBtn.classList.add('wrong-answer');
-                }
-            });
-        }
-
-        function endGame() {
-            document.getElementById('gameScreen').classList.add('hidden');
-            document.getElementById('progressContainer').classList.add('hidden');
-            document.getElementById('resultsScreen').classList.remove('hidden');
-            document.getElementById('finalScore').textContent = Math.round(score);
-            const percentage = FULL_MARKS > 0 ? Math.round((score / FULL_MARKS) * 100) : 0;
-            document.getElementById('accuracy').textContent = percentage;
-            let message = '', emoji = '';
-            if (percentage >= 90) { message = '太棒了！你是會計大師！'; emoji = '👑'; } 
-            else if (percentage >= 70) { message = '做得很好！基礎很紮實！'; emoji = '🌟'; } 
-            else if (percentage >= 50) { message = '不錯！多練習會更熟練！'; emoji = '👍'; } 
-            else { message = '繼續努力！建議複習基本概念。'; emoji = '📚'; }
-            document.getElementById('performanceMessage').textContent = message;
-            document.getElementById('endEmoji').textContent = emoji;
-        }
-
-        function restartGame() {
-            document.getElementById('resultsScreen').classList.add('hidden');
-            document.getElementById('startScreen').classList.remove('hidden');
-        }
-
-        function showCustomAlert(message) {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
-            alertDiv.innerHTML = `<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-sm w-full slide-in"><p class="text-gray-700 dark:text-gray-300 mb-6 text-lg font-medium text-center">${message}</p><button class="w-full px-4 py-3 bg-primary text-white hover:bg-purple-700 rounded-lg text-base font-semibold" onclick="this.closest('.fixed').remove()">確定</button></div>`;
-            document.body.appendChild(alertDiv);
-        }
-
-        // *** THIS IS THE NEW EVENT HANDLING LOGIC ***
-        document.addEventListener('DOMContentLoaded', () => {
-            // Difficulty selection
-            document.getElementById('difficulty-selection').addEventListener('click', (event) => {
-                const btn = event.target.closest('.difficulty-btn');
-                if (btn) {
-                    selectDifficulty(btn.dataset.difficulty, btn);
-                }
-            });
-
-            // Dynamic option buttons in the game
-            document.getElementById('questionContainer').addEventListener('click', (event) => {
-                const btn = event.target.closest('.option-btn');
-                if (btn) {
-                    selectOption(btn.dataset.type, btn.dataset.value, btn);
-                }
-            });
-
-            // Static buttons
-            document.getElementById('startGameBtn').addEventListener('click', startGame);
-            document.getElementById('submitBtn').addEventListener('click', checkAnswer);
-            document.getElementById('printBtn').addEventListener('click', () => window.print());
-            document.getElementById('restartBtn').addEventListener('click', restartGame);
-        });
-    </script>
-</body>
-</html>
