@@ -19,7 +19,7 @@
         }
     </script>
     <style>
-        body { font-family: 'Microsoft JhengHei', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { font-family: 'Microsoft JhengHei', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; cursor: pointer; } /* Added cursor pointer for better touch feedback */
         .slide-in { animation: slideIn 0.5s ease-out; }
         @keyframes slideIn {
             from { transform: translateY(20px); opacity: 0; }
@@ -31,7 +31,7 @@
         button:active { transform: scale(0.98); }
     </style>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
     <div class="min-h-screen p-4 md:p-8">
         <div class="max-w-4xl mx-auto mb-8">
             <h1 class="text-3xl md:text-4xl font-bold text-center mb-2 text-primary">會計等式互動遊戲</h1>
@@ -60,7 +60,7 @@
                 </div>
                 <div class="mb-8">
                     <label class="block text-base font-semibold mb-3">選擇難度 (滿分均為100分):</label>
-                    <div id="difficulty-selection" class="flex gap-3 justify-center flex-wrap">
+                    <div class="flex gap-3 justify-center flex-wrap">
                         <button data-difficulty="easy" class="difficulty-btn px-6 py-3 rounded-lg border-2 border-primary bg-primary text-white transition-all text-base active">
                             簡單 (10 題)
                         </button>
@@ -137,7 +137,7 @@
         const effectOptions = [{value: 'increase', label: '增加 ↑'}, {value: 'decrease', label: '減少 ↓'}];
         const debitCreditOptions = [{value: 'debit', label: '借方'}, {value: 'credit', label: '貸方'}];
         
-        let selectedDifficulty = 'easy'; // Default difficulty
+        let selectedDifficulty = 'easy';
         let currentQuestions = [];
         let currentQuestionIndex = 0;
         let score = 0;
@@ -153,16 +153,15 @@
 
         function startGame() {
             let shuffled = shuffleArray([...transactions]);
-            // *** EDITED: Re-balanced number of questions ***
             if (selectedDifficulty === 'easy') {
                 currentQuestions = shuffled.slice(0, 10); 
-                pointsPerEntry = FULL_MARKS / (10 * 2); // 5 points
+                pointsPerEntry = FULL_MARKS / (10 * 2);
             } else if (selectedDifficulty === 'medium') {
                 currentQuestions = shuffled.slice(0, 8); 
-                pointsPerEntry = FULL_MARKS / (8 * 2); // 6.25 points
+                pointsPerEntry = FULL_MARKS / (8 * 2);
             } else { // hard
                 currentQuestions = shuffled.slice(0, 6);
-                pointsPerEntry = FULL_MARKS / (6 * 2); // 8.33... points
+                pointsPerEntry = FULL_MARKS / (6 * 2);
             }
             
             currentQuestions.forEach(q => q.doneEntries = []);
@@ -234,13 +233,122 @@
             if (document.getElementById('submitBtn').disabled) return;
             userAnswers[type] = value;
             btnElement.closest('.grid').querySelectorAll('.option-btn').forEach(b => {
-                 if(b.dataset.type === type) {
-                    b.classList.remove('bg-primary', 'text-white', 'border-primary');
-                }
+                 if(b.dataset.type === type) b.classList.remove('bg-primary', 'text-white', 'border-primary');
             });
             btnElement.classList.add('bg-primary', 'text-white', 'border-primary');
         }
 
-  
+        function checkAnswer() {
+            if (!userAnswers.account || !userAnswers.type || !userAnswers.effect || !userAnswers.debitCredit) {
+                showCustomAlert('請完成所有選項！');
+                return;
+            }
+            const transaction = currentQuestions[currentQuestionIndex];
+            let isCorrect = false, matchedEntry = null, matchedEntryIndex = -1;
 
+            for (let i = 0; i < transaction.entries.length; i++) {
+                if (transaction.doneEntries.includes(i)) continue;
+                const entry = transaction.entries[i];
+                if (userAnswers.account === entry.account && userAnswers.type === entry.type && userAnswers.effect === entry.effect && userAnswers.debitCredit === entry.debitCredit) {
+                    isCorrect = true; matchedEntry = entry; matchedEntryIndex = i; break;
+                }
+            }
+            const feedbackEl = document.getElementById('feedback');
+            feedbackEl.className = 'mt-6 p-4 rounded-lg text-center font-bold text-lg';
+
+            if (isCorrect) {
+                score += pointsPerEntry;
+                transaction.doneEntries.push(matchedEntryIndex);
+                feedbackEl.textContent = `🎉 答對了！`;
+                feedbackEl.classList.add('bg-green-100', 'dark:bg-green-900', 'text-green-800', 'dark:text-green-100');
+                highlightAnswers(matchedEntry);
+            } else {
+                const firstUnansweredIndex = transaction.entries.findIndex((entry, index) => !transaction.doneEntries.includes(index));
+                const expectedEntry = transaction.entries[firstUnansweredIndex];
+                feedbackEl.innerHTML = `❌ 答錯了。<br>正確答案之一是： ${expectedEntry.account} (${expectedEntry.debitCredit})`;
+                feedbackEl.classList.add('bg-red-100', 'dark:bg-red-900', 'text-red-800', 'dark:text-red-100');
+                highlightAnswers(expectedEntry);
+            }
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').classList.add('opacity-50', 'cursor-not-allowed');
+            setTimeout(() => {
+                if (transaction.doneEntries.length >= transaction.entries.length) currentQuestionIndex++;
+                loadQuestion();
+            }, isCorrect ? 2000 : 4000);
+        }
+
+        function highlightAnswers(correctEntry) {
+            ['account', 'type', 'effect', 'debitCredit'].forEach(key => {
+                const correctVal = correctEntry[key], userVal = userAnswers[key];
+                const correctBtn = document.querySelector(`[data-type="${key}"][data-value="${correctVal}"]`);
+                if (correctBtn) correctBtn.classList.add('correct-answer');
+                if (userVal && userVal !== correctVal) {
+                    const wrongBtn = document.querySelector(`[data-type="${key}"][data-value="${userVal}"]`);
+                    if (wrongBtn) wrongBtn.classList.add('wrong-answer');
+                }
+            });
+        }
+
+        function endGame() {
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('progressContainer').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+            document.getElementById('finalScore').textContent = Math.round(score);
+            const percentage = FULL_MARKS > 0 ? Math.round((score / FULL_MARKS) * 100) : 0;
+            document.getElementById('accuracy').textContent = percentage;
+            let message = '', emoji = '';
+            if (percentage >= 90) { message = '太棒了！你是會計大師！'; emoji = '👑'; } 
+            else if (percentage >= 70) { message = '做得很好！基礎很紮實！'; emoji = '🌟'; } 
+            else if (percentage >= 50) { message = '不錯！多練習會更熟練！'; emoji = '👍'; } 
+            else { message = '繼續努力！建議複習基本概念。'; emoji = '📚'; }
+            document.getElementById('performanceMessage').textContent = message;
+            document.getElementById('endEmoji').textContent = emoji;
+        }
+
+        function restartGame() {
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
+        }
+
+        function showCustomAlert(message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+            alertDiv.innerHTML = `<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-sm w-full slide-in"><p class="text-gray-700 dark:text-gray-300 mb-6 text-lg font-medium text-center">${message}</p><button class="w-full px-4 py-3 bg-primary text-white hover:bg-purple-700 rounded-lg text-base font-semibold" onclick="this.closest('.fixed').remove()">確定</button></div>`;
+            document.body.appendChild(alertDiv);
+        }
+
+        // *** DEFINITIVE IPAD FIX: Universal Event Listener ***
+        document.addEventListener('click', function (event) {
+            // Difficulty selection
+            const difficultyBtn = event.target.closest('.difficulty-btn');
+            if (difficultyBtn) {
+                selectDifficulty(difficultyBtn.dataset.difficulty, difficultyBtn);
+                return;
+            }
+
+            // Option selection in game
+            const optionBtn = event.target.closest('.option-btn');
+            if (optionBtn) {
+                selectOption(optionBtn.dataset.type, optionBtn.dataset.value, optionBtn);
+                return;
+            }
+
+            // Static buttons
+            if (event.target.closest('#startGameBtn')) {
+                startGame();
+                return;
+            }
+            if (event.target.closest('#submitBtn')) {
+                checkAnswer();
+                return;
+            }
+            if (event.target.closest('#restartBtn')) {
+                restartGame();
+                return;
+            }
+        });
+
+    </script>
+</body>
+</html>
 
